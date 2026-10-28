@@ -11,6 +11,12 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
+# Required: signs the admin session tokens. No default, so a missing
+# variable stops the app instead of using a secret anyone can read on GitHub.
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+if not SECRET_KEY:
+    raise RuntimeError("Missing env var: SECRET_KEY")
+
 
 # ── AUTH HELPERS ──────────────────────────────────────
 
@@ -28,7 +34,7 @@ def load_admin_users():
 
 def make_session_token(username: str) -> str:
     """Creates a signed HMAC-SHA256 token: base64(username:timestamp:signature)"""
-    secret = os.environ.get("SECRET_KEY", "change-this-secret-in-railway")
+    secret = SECRET_KEY
     ts = str(int(time.time()))
     msg = f"{username}:{ts}"
     sig = hmac.new(secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
@@ -37,7 +43,7 @@ def make_session_token(username: str) -> str:
 
 def verify_session_token(token: str):
     """Returns username if token is valid and not expired (12h), else None."""
-    secret = os.environ.get("SECRET_KEY", "change-this-secret-in-railway")
+    secret = SECRET_KEY
     try:
         decoded = base64.b64decode(token.encode()).decode()
         username, ts, sig = decoded.rsplit(":", 2)
