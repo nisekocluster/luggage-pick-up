@@ -76,13 +76,13 @@ en el servicio Flask → **Variables**:
 
 En Railway → tu servicio Flask → **Settings** → **Networking** → **Generate Domain**
 
-URL actual: `https://luggagepickup-production.up.railway.app`
+URL actual: `https://web-production-65866.up.railway.app`
 
 ### 6. Actualizar los HTML
 
 En `index.html` y `admin.html`, la constante `API_URL` debe apuntar a la URL de Railway:
 ```js
-const API_URL = 'https://luggagepickup-production.up.railway.app';
+const API_URL = 'https://web-production-65866.up.railway.app';
 ```
 
 ## Report diario (Hilton)
@@ -103,7 +103,7 @@ en los planes Free, Trial y Hobby.
 **Probar manualmente:**
 
 ```bash
-curl -X POST https://luggagepickup-production.up.railway.app/api/send-daily-report \
+curl -X POST https://web-production-65866.up.railway.app/api/send-daily-report \
   -H "Authorization: Bearer TU_REPORT_SECRET"
 ```
 
