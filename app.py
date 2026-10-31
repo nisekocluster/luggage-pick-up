@@ -5,6 +5,7 @@ import hmac
 import hashlib
 import time
 import base64
+import re
 from functools import wraps
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify
@@ -322,6 +323,108 @@ def auth_login():
     token = make_session_token(matched_user)
     log.info(f"Admin login success: {matched_user}")
     return jsonify({"token": token, "username": matched_user}), 200
+
+
+# ── GET — analytics (admin auth + ANALYTICS_PIN) ──────
+#    Query params: from=YYYY-MM-DD, to=YYYY-MM-DD (both optional)
+#    Header:       X-Analytics-Pin
+#    Only active records (Trash excluded). Grouped by pick-up date,
+#    which the guest form stores as a plain JST calendar date.
+
+# Simple brute-force protection: after 5 wrong PINs from the same IP,
+# lock that IP out for 5 minutes. In-memory, per worker, resets on redeploy.
+_PIN_MAX_FAILS = 5
+_PIN_LOCK_SECS = 300
+_pin_failures  = {}   # ip -> (fail_count, locked_until)
+_DATE_RE       = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def _client_ip():
+    fwd = request.headers.get("X-Forwarded-For", "")
+    return fwd.split(",")[0].strip() if fwd else (request.remote_addr or "?")
+
+
+def _items_count(items):
+    """'3' -> 3, '10+' -> 10, anything else -> 0"""
+    try:
+        return int((items or "").rstrip("+"))
+    except ValueError:
+        return 0
+
+
+@app.route("/api/analytics", methods=["GET"])
+@require_admin
+def analytics():
+    # Read on each request so a PIN changed in Railway applies after redeploy
+    analytics_pin = os.environ.get("ANALYTICS_PIN", "").strip()
+    if not analytics_pin:
+        return jsonify({"error": "analytics_pin_not_set"}), 503
+
+    ip = _client_ip()
+    fails, locked_until = _pin_failures.get(ip, (0, 0))
+    now = time.time()
+    if locked_until > now:
+        return jsonify({"error": "too_many_attempts",
+                        "retry_after": int(locked_until - now)}), 429
+
+    pin = request.headers.get("X-Analytics-Pin", "").strip()
+    if not hmac.compare_digest(pin.encode(), analytics_pin.encode()):
+        fails += 1
+        if fails >= _PIN_MAX_FAILS:
+            _pin_failures[ip] = (0, now + _PIN_LOCK_SECS)
+            return jsonify({"error": "too_many_attempts",
+                            "retry_after": _PIN_LOCK_SECS}), 429
+        _pin_failures[ip] = (fails, 0)
+        return jsonify({"error": "invalid_pin",
+                        "attempts_left": _PIN_MAX_FAILS - fails}), 403
+    _pin_failures.pop(ip, None)
+
+    date_from = request.args.get("from", "").strip() or None
+    date_to   = request.args.get("to", "").strip() or None
+    for d in (date_from, date_to):
+        if d and not _DATE_RE.match(d):
+            return jsonify({"error": "invalid_date"}), 400
+    if date_from and date_to and date_from > date_to:
+        date_from, date_to = date_to, date_from
+
+    query = LuggageRequest.query.filter_by(trashed=False)
+    if date_from:
+        query = query.filter(LuggageRequest.date >= date_from)
+    if date_to:
+        query = query.filter(LuggageRequest.date <= date_to)
+    records = query.all()
+
+    totals = {"requests": 0, "items": 0, "items_plus": False}
+    hotels = {}
+    days   = {}
+    times  = {}
+    for r in records:
+        n = _items_count(r.items)
+        plus = (r.items or "").endswith("+")
+        totals["requests"] += 1
+        totals["items"]    += n
+        totals["items_plus"] = totals["items_plus"] or plus
+
+        h = hotels.setdefault(r.hotel, {"hotel": r.hotel, "requests": 0, "items": 0})
+        h["requests"] += 1
+        h["items"]    += n
+
+        d = days.setdefault(r.date, {"day": r.date, "requests": 0, "items": 0, "hotels": {}})
+        d["requests"] += 1
+        d["items"]    += n
+        d["hotels"][r.hotel] = d["hotels"].get(r.hotel, 0) + 1
+
+        times[r.time] = times.get(r.time, 0) + 1
+
+    return jsonify({
+        "from":   date_from,
+        "to":     date_to,
+        "totals": totals,
+        "hotels": sorted(hotels.values(), key=lambda h: -h["requests"]),
+        "days":   [days[k] for k in sorted(days)],
+        "times":  [{"time": t, "requests": c}
+                   for t, c in sorted(times.items(), key=lambda x: -x[1])],
+    })
 
 # ── DAILY REPORT — Hilton ─────────────────────────────
 @app.route("/api/send-daily-report", methods=["POST"])
