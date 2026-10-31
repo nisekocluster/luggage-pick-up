@@ -64,6 +64,7 @@ en el servicio Flask → **Variables**:
 | `ADMIN_USERS`             | Usuarios del panel admin. Formato: `Admin:pass1,Manager:pass2`      |
 | `SECRET_KEY`              | Clave para firmar las sesiones del admin (cadena larga y aleatoria) |
 | `REPORT_SECRET`           | Token que el cron job envía para autorizar el report diario         |
+| `ANALYTICS_PIN`           | PIN de la sección Analytics del admin. Sin él, Analytics queda bloqueado |
 | `RESEND_API_KEY`          | API key de Resend para enviar emails                                |
 | `REPORT_EMAIL_FROM`       | Remitente del report, de un dominio verificado en Resend (ej. `luggage@nisekocluster.com`) |
 | `REPORT_EMAIL_TO_HILTON`  | Destinatarios del report de Hilton, separados por comas             |

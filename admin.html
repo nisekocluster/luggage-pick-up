@@ -197,6 +197,48 @@
     .btn-small svg { width: 13px; height: 13px; }
     .btn-export { background: rgba(196,169,107,0.15); color: var(--gold); border: 1px solid rgba(196,169,107,0.3); }
     .btn-export:hover { background: rgba(196,169,107,0.25); }
+
+    /* ── Analytics ── */
+    .modal.an-modal { max-width: 760px; max-height: calc(100vh - 2rem); display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+    .an-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.75rem; background: var(--pine); color: var(--white); }
+    .an-modal-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 500; margin: 0; }
+    .an-modal-header .btn-close-export { color: rgba(255,255,255,0.7); }
+    .an-modal-body { padding: 1.5rem 1.75rem; overflow-y: auto; transition: opacity 0.15s; }
+    .an-modal-body.an-loading { opacity: 0.5; pointer-events: none; }
+    .an-presets { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .an-preset { padding: 0.4rem 0.85rem; border-radius: 16px; border: 1.5px solid var(--mist); background: transparent; color: #777; font-family: 'Jost', sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s; }
+    .an-preset:hover, .an-preset.active { border-color: var(--pine); color: var(--pine); background: rgba(44,74,62,0.06); }
+    .an-range { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .an-range .export-input { min-width: 140px; cursor: pointer; }
+    .an-summary { font-size: 0.78rem; color: #888; font-weight: 300; margin-bottom: 1.1rem; }
+    .an-summary span { color: var(--pine); font-weight: 500; }
+    .an-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.4rem; }
+    .an-section-title { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pine-light); margin-bottom: 0.6rem; }
+    .an-hotels { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.4rem; }
+    .an-hotel-row { display: grid; grid-template-columns: 110px 1fr 110px; align-items: center; gap: 0.75rem; font-size: 0.82rem; }
+    .an-hotel-row .num { text-align: right; color: #777; font-variant-numeric: tabular-nums; }
+    .an-bar { height: 8px; border-radius: 4px; background: var(--mist); overflow: hidden; }
+    .an-bar span { display: block; height: 100%; background: var(--pine); border-radius: 4px; }
+    .an-table-wrap { border: 1px solid var(--mist); border-radius: 4px; overflow: auto; max-height: 260px; margin-bottom: 1.4rem; }
+    .an-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .an-table th { position: sticky; top: 0; z-index: 1; }
+    .an-table td { padding: 0.55rem 1rem; border-bottom: 1px solid var(--mist); font-variant-numeric: tabular-nums; }
+    .an-table th:not(:first-child), .an-table td:not(:first-child) { text-align: right; }
+    .an-table tfoot td { font-weight: 600; color: var(--pine); border-bottom: none; background: var(--snow); }
+    .an-empty { text-align: center; color: #aaa; padding: 1.5rem; }
+    .an-actions { display: flex; justify-content: flex-end; }
+    .pin-input { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--mist); border-radius: 3px; background: var(--snow); font-family: 'Jost', sans-serif; font-size: 1.2rem; letter-spacing: 0.3em; text-align: center; outline: none; margin-bottom: 0.5rem; }
+    .pin-input:focus { border-color: var(--pine-light); }
+    .pin-error { min-height: 1.2rem; font-size: 0.78rem; color: var(--danger); margin-bottom: 1rem !important; }
+    @media (max-width: 600px) {
+      .modal.an-modal { border-radius: 12px 12px 0 0; max-height: 92vh; }
+      .an-modal-header, .an-modal-body { padding-left: 1.1rem; padding-right: 1.1rem; }
+      .an-grid { grid-template-columns: 1fr 1fr; }
+      .an-hotel-row { grid-template-columns: 90px 1fr 80px; font-size: 0.75rem; }
+      .an-range .export-field { flex: 1; }
+      .an-range .export-input { min-width: 0; width: 100%; }
+      .an-actions .btn-do-export { width: 100%; justify-content: center; }
+    }
     .btn-logout { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.12); }
     .btn-logout:hover { background: rgba(255,255,255,0.15); color: var(--white); }
 
@@ -819,6 +861,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export
         </button>
+        <button class="btn-small btn-export" onclick="openAnalyticsModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Analytics
+        </button>
         <button class="btn-small btn-logout" onclick="doLogout()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Sign Out
@@ -1136,6 +1182,95 @@
     </div>
   </div>
 
+  <!-- ═══ ANALYTICS PIN ═══ -->
+  <div class="modal-overlay" id="pinOverlay">
+    <div class="modal">
+      <h3>Analytics access</h3>
+      <p>Enter the analytics PIN to continue.</p>
+      <input type="password" id="pinInput" class="pin-input" inputmode="numeric" autocomplete="off" maxlength="32" placeholder="••••"/>
+      <p class="pin-error" id="pinError"></p>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closePinModal()">Cancel</button>
+        <button class="btn-do-export" id="btnPinSubmit" onclick="submitAnalyticsPin()">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ANALYTICS ═══ -->
+  <div class="modal-overlay" id="analyticsOverlay">
+    <div class="modal an-modal">
+      <div class="an-modal-header">
+        <h3>Analytics Report</h3>
+        <button class="btn-close-export" onclick="closeAnalyticsModal()" title="Close">&#x2715;</button>
+      </div>
+      <div class="an-modal-body" id="anBody">
+        <div class="an-presets">
+          <button type="button" class="an-preset" data-preset="today" onclick="setAnalyticsPreset('today')">Today</button>
+          <button type="button" class="an-preset" data-preset="7d"    onclick="setAnalyticsPreset('7d')">Last 7 days</button>
+          <button type="button" class="an-preset" data-preset="30d"   onclick="setAnalyticsPreset('30d')">Last 30 days</button>
+          <button type="button" class="an-preset" data-preset="month" onclick="setAnalyticsPreset('month')">This month</button>
+          <button type="button" class="an-preset" data-preset="all"   onclick="setAnalyticsPreset('all')">All time</button>
+        </div>
+        <div class="an-range">
+          <div class="export-field">
+            <label>Pick-up from</label>
+            <input type="text" id="anFrom" class="export-input" placeholder="From date" readonly/>
+          </div>
+          <div class="export-field">
+            <label>Pick-up to</label>
+            <input type="text" id="anTo" class="export-input" placeholder="To date" readonly/>
+          </div>
+        </div>
+        <p class="an-summary" id="anSummary"></p>
+
+        <div class="an-grid">
+          <div class="stat-card">
+            <div class="stat-label">Requests</div>
+            <div class="stat-value" id="anRequests">0</div>
+            <div class="stat-sub" id="anRequestsSub">&nbsp;</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Items</div>
+            <div class="stat-value" id="anItems">0</div>
+            <div class="stat-sub" id="anItemsSub">&nbsp;</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Busiest Time</div>
+            <div class="stat-value" id="anTopTime" style="font-size:1.3rem;margin-top:0.35rem">—</div>
+            <div class="stat-sub" id="anTopTimeSub">&nbsp;</div>
+          </div>
+        </div>
+
+        <p class="an-section-title">By hotel</p>
+        <div class="an-hotels" id="anHotels"></div>
+
+        <p class="an-section-title">Daily breakdown (pick-up date)</p>
+        <div class="an-table-wrap">
+          <table class="an-table">
+            <thead><tr><th>Date</th><th>Requests</th><th>Items</th><th>Hilton</th><th>Hinode Hills</th><th>Green Leaf</th></tr></thead>
+            <tbody id="anDailyBody"></tbody>
+            <tfoot id="anDailyFoot"></tfoot>
+          </table>
+        </div>
+
+        <p class="an-section-title">Pick-up times</p>
+        <div class="an-table-wrap">
+          <table class="an-table">
+            <thead><tr><th>Time</th><th>Requests</th><th>% of total</th></tr></thead>
+            <tbody id="anTimesBody"></tbody>
+          </table>
+        </div>
+
+        <div class="an-actions">
+          <button class="btn-do-export" id="btnAnExport" onclick="exportAnalyticsCSV()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Report (CSV)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -1215,6 +1350,7 @@
       document.getElementById('loginPass').value = '';
       document.getElementById('sessionOverlay').classList.remove('show');
       clearSelection();
+      resetAnalyticsAccess();
     }
 
     // ── AUTO LOGOUT ──
@@ -1808,6 +1944,302 @@
       ) - 9 * 60 * 60 * 1000);
       const msUntilMidnight = nextMidnightJST - Date.now();
       setTimeout(() => { loadAll(); scheduleMidnightRefresh(); }, msUntilMidnight);
+    })();
+
+    // ── ANALYTICS ──
+    // Numbers come from GET /api/analytics, which requires the admin token
+    // AND the ANALYTICS_PIN set in Railway. The PIN is kept only in memory
+    // (never in sessionStorage) and is cleared on logout or page reload.
+    // Ranges filter by pick-up date (JST).
+    const AN_HOTELS = ['Hilton', 'Hinode Hills', 'Green Leaf'];
+    let analyticsPin   = '';
+    let lastAnalytics  = null;
+    let analyticsReqId = 0;
+    let anFromPicker, anToPicker;
+
+    function resetAnalyticsAccess() {
+      analyticsPin  = '';
+      lastAnalytics = null;
+      document.getElementById('pinOverlay').classList.remove('show');
+      document.getElementById('analyticsOverlay').classList.remove('show');
+    }
+
+    function jstToday() {
+      return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().split('T')[0];
+    }
+
+    // Shift a YYYY-MM-DD calendar date by n days (pure calendar math, no TZ)
+    function shiftDay(ymd, n) {
+      const [y, m, d] = ymd.split('-').map(Number);
+      return new Date(Date.UTC(y, m - 1, d + n)).toISOString().split('T')[0];
+    }
+
+    function presetRange(preset) {
+      const today = jstToday();
+      if (preset === 'today') return { from: today, to: today };
+      if (preset === '7d')    return { from: shiftDay(today, -6),  to: today };
+      if (preset === '30d')   return { from: shiftDay(today, -29), to: today };
+      if (preset === 'month') return { from: today.slice(0, 8) + '01', to: today };
+      return { from: '', to: '' };
+    }
+
+    function clearAnalyticsPresetHighlight() {
+      document.querySelectorAll('.an-preset').forEach(b => b.classList.remove('active'));
+    }
+
+    function setAnalyticsPreset(preset) {
+      const { from, to } = presetRange(preset);
+      // false = don't fire onChange, we call updateAnalytics() once below
+      anFromPicker.setDate(from || null, false);
+      anToPicker.setDate(to || null, false);
+      clearAnalyticsPresetHighlight();
+      const btn = document.querySelector(`.an-preset[data-preset="${preset}"]`);
+      if (btn) btn.classList.add('active');
+      updateAnalytics();
+    }
+
+    function getAnalyticsRange() {
+      let from = document.getElementById('anFrom').value;
+      let to   = document.getElementById('anTo').value;
+      if (from && to && from > to) [from, to] = [to, from];
+      return { from, to };
+    }
+
+    // Returns { ok, status, data }
+    async function fetchAnalytics(pin, from, to) {
+      const qs = new URLSearchParams();
+      if (from) qs.set('from', from);
+      if (to)   qs.set('to', to);
+      const res = await authFetch(`${API_URL}/api/analytics?${qs}`, {
+        headers: { 'X-Analytics-Pin': pin }
+      });
+      let data = {};
+      try { data = await res.json(); } catch {}
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    function pinErrorMessage(status, data) {
+      if (status === 403) {
+        const left = data && data.attempts_left;
+        return left != null ? `Incorrect PIN. ${left} attempt(s) left.` : 'Incorrect PIN.';
+      }
+      if (status === 429) {
+        const mins = Math.ceil(((data && data.retry_after) || 300) / 60);
+        return `Too many attempts. Try again in ${mins} min.`;
+      }
+      if (status === 503) return 'Analytics PIN is not configured on the server.';
+      return 'Server error. Try again.';
+    }
+
+    // ── PIN modal ──
+    function openAnalyticsModal() {
+      if (analyticsPin) { showAnalytics(); return; }
+      const input = document.getElementById('pinInput');
+      input.value = '';
+      document.getElementById('pinError').textContent = '';
+      document.getElementById('pinOverlay').classList.add('show');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closePinModal() {
+      document.getElementById('pinOverlay').classList.remove('show');
+    }
+
+    async function submitAnalyticsPin() {
+      const input = document.getElementById('pinInput');
+      const err   = document.getElementById('pinError');
+      const btn   = document.getElementById('btnPinSubmit');
+      const pin   = input.value.trim();
+      if (!pin) { err.textContent = 'Enter the PIN.'; return; }
+
+      btn.disabled = true;
+      err.textContent = '';
+      try {
+        // Validate the PIN with the same request that loads the default view
+        const { from, to } = presetRange('month');
+        const r = await fetchAnalytics(pin, from, to);
+        if (!r.ok) {
+          err.textContent = pinErrorMessage(r.status, r.data);
+          input.value = '';
+          input.focus();
+          return;
+        }
+        analyticsPin = pin;
+        closePinModal();
+        showAnalytics();
+      } catch (e) {
+        if (e.message !== 'Unauthorized') err.textContent = 'Connection error.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ── Analytics modal ──
+    function showAnalytics() {
+      document.getElementById('analyticsOverlay').classList.add('show');
+      setAnalyticsPreset('month');
+    }
+
+    function closeAnalyticsModal() {
+      anFromPicker.close();
+      anToPicker.close();
+      document.getElementById('analyticsOverlay').classList.remove('show');
+    }
+
+    function pct(part, whole) {
+      return whole ? Math.round((part / whole) * 1000) / 10 : 0;
+    }
+
+    function rangeLabel(from, to) {
+      if (!from && !to) return 'all dates';
+      if (from && to)   return from === to ? formatDate(from) : `${formatDate(from)} → ${formatDate(to)}`;
+      if (from)         return `from ${formatDate(from)}`;
+      return `up to ${formatDate(to)}`;
+    }
+
+    async function updateAnalytics() {
+      if (!analyticsPin) return;
+      const { from, to } = getAnalyticsRange();
+      const reqId = ++analyticsReqId;
+      const body  = document.getElementById('anBody');
+      body.classList.add('an-loading');
+      document.getElementById('btnAnExport').disabled = true;
+
+      let r;
+      try {
+        r = await fetchAnalytics(analyticsPin, from, to);
+      } catch (e) {
+        if (reqId !== analyticsReqId) return;
+        body.classList.remove('an-loading');
+        if (e.message !== 'Unauthorized') document.getElementById('anSummary').textContent = 'Connection error. Try again.';
+        return;
+      }
+      if (reqId !== analyticsReqId) return;   // a newer request superseded this one
+      body.classList.remove('an-loading');
+
+      if (!r.ok) {
+        // PIN changed in Railway, or locked out → ask again
+        if (r.status === 403 || r.status === 429 || r.status === 503) {
+          resetAnalyticsAccess();
+          openAnalyticsModal();
+          document.getElementById('pinError').textContent = pinErrorMessage(r.status, r.data);
+        } else {
+          document.getElementById('anSummary').textContent = pinErrorMessage(r.status, r.data);
+        }
+        return;
+      }
+
+      lastAnalytics = r.data;
+      renderAnalytics(r.data);
+    }
+
+    function renderAnalytics(a) {
+      const t     = a.totals;
+      const days  = a.days  || [];
+      const times = a.times || [];
+      const items = t.items + (t.items_plus ? '+' : '');
+
+      document.getElementById('anSummary').innerHTML =
+        `Pick-ups for <span>${rangeLabel(a.from, a.to)}</span> · active records only (Trash excluded).`;
+
+      document.getElementById('anRequests').textContent    = t.requests;
+      document.getElementById('anRequestsSub').textContent = `${days.length} day(s) with pick-ups`;
+      document.getElementById('anItems').textContent       = items;
+      document.getElementById('anItemsSub').textContent    = t.requests ? `${(t.items / t.requests).toFixed(1)} per request` : 'pieces of luggage';
+      document.getElementById('anTopTime').textContent     = times.length ? times[0].time : '—';
+      document.getElementById('anTopTimeSub').textContent  = times.length ? `${times[0].requests} request(s)` : ' ';
+
+      const byHotel = Object.fromEntries((a.hotels || []).map(h => [h.hotel, h]));
+      const hotelNames = [...AN_HOTELS, ...Object.keys(byHotel).filter(h => !AN_HOTELS.includes(h))];
+      document.getElementById('anHotels').innerHTML = hotelNames.map(name => {
+        const h = byHotel[name] || { requests: 0, items: 0 };
+        return `
+          <div class="an-hotel-row">
+            <span>${hotelBadge(escHtml(name))}</span>
+            <div class="an-bar"><span style="width:${pct(h.requests, t.requests)}%"></span></div>
+            <span class="num">${h.requests} · ${pct(h.requests, t.requests)}%</span>
+          </div>`;
+      }).join('');
+
+      const tbody = document.getElementById('anDailyBody');
+      const tfoot = document.getElementById('anDailyFoot');
+      if (days.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="an-empty">No pick-ups in this range.</td></tr>`;
+        tfoot.innerHTML = '';
+      } else {
+        tbody.innerHTML = days.slice().reverse().map(d => `
+          <tr>
+            <td>${formatDate(d.day)}</td><td>${d.requests}</td><td>${d.items}</td>
+            ${AN_HOTELS.map(h => `<td>${d.hotels[h] || 0}</td>`).join('')}
+          </tr>`).join('');
+        tfoot.innerHTML = `
+          <tr>
+            <td>Total</td><td>${t.requests}</td><td>${items}</td>
+            ${AN_HOTELS.map(h => `<td>${(byHotel[h] || {}).requests || 0}</td>`).join('')}
+          </tr>`;
+      }
+
+      document.getElementById('anTimesBody').innerHTML = times.length
+        ? times.map(x => `<tr><td>${escHtml(x.time)}</td><td>${x.requests}</td><td>${pct(x.requests, t.requests)}%</td></tr>`).join('')
+        : `<tr><td colspan="3" class="an-empty">No pick-ups in this range.</td></tr>`;
+
+      document.getElementById('btnAnExport').disabled = t.requests === 0;
+    }
+
+    function exportAnalyticsCSV() {
+      if (!lastAnalytics || !lastAnalytics.totals.requests) return;
+      const { from, to, totals: t } = lastAnalytics;
+      const days   = lastAnalytics.days   || [];
+      const times  = lastAnalytics.times  || [];
+      const hotels = lastAnalytics.hotels || [];
+      const items  = t.items + (t.items_plus ? '+' : '');
+
+      const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      const lines = [];
+      lines.push(q('Niseko Cluster — Luggage Pick-up Analytics'));
+      lines.push([q('Pick-up dates'), q(rangeLabel(from, to))].join(','));
+      lines.push([q('Generated (JST)'), q(formatSubmitted(new Date().toISOString()))].join(','));
+      lines.push([q('Scope'), q('Active records only (Trash excluded)')].join(','));
+      lines.push('');
+      lines.push([q('Metric'), q('Value')].join(','));
+      lines.push([q('Requests'), t.requests].join(','));
+      lines.push([q('Items'), q(items)].join(','));
+      lines.push('');
+      lines.push(['Hotel', 'Requests', 'Items', '% of requests'].map(q).join(','));
+      hotels.forEach(h => lines.push([q(h.hotel), h.requests, h.items, q(pct(h.requests, t.requests) + '%')].join(',')));
+      lines.push('');
+      lines.push(['Pick-up date', 'Requests', 'Items', ...AN_HOTELS].map(q).join(','));
+      days.forEach(d => lines.push([q(d.day), d.requests, d.items, ...AN_HOTELS.map(h => d.hotels[h] || 0)].join(',')));
+      lines.push('');
+      lines.push(['Pick-up time', 'Requests', '% of requests'].map(q).join(','));
+      times.forEach(x => lines.push([q(x.time), x.requests, q(pct(x.requests, t.requests) + '%')].join(',')));
+
+      let suffix = 'all';
+      if (from && to)  suffix = from === to ? from : `${from}_to_${to}`;
+      else if (from)   suffix = `from_${from}`;
+      else if (to)     suffix = `until_${to}`;
+
+      // BOM so Excel opens UTF-8 correctly
+      const blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `luggage-analytics-${suffix}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    (function initAnalytics() {
+      const onPick = () => { clearAnalyticsPresetHighlight(); updateAnalytics(); };
+      const opts = { dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y', altInputClass: 'export-input', disableMobile: true, onChange: onPick };
+      anFromPicker = flatpickr('#anFrom', opts);
+      anToPicker   = flatpickr('#anTo', opts);
+
+      const anOv  = document.getElementById('analyticsOverlay');
+      const pinOv = document.getElementById('pinOverlay');
+      anOv.addEventListener('click',  e => { if (e.target === anOv)  closeAnalyticsModal(); });
+      pinOv.addEventListener('click', e => { if (e.target === pinOv) closePinModal(); });
+      document.getElementById('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') submitAnalyticsPin(); });
     })();
   </script>
 </body>
